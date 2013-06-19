@@ -11,6 +11,8 @@
 #import "QCFirstViewController.h"
 
 #import "QCSecondViewController.h"
+#import <Parse/Parse.h>
+
 
 @implementation QCAppDelegate
 
@@ -18,6 +20,14 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+    
+    [Parse setApplicationId:@"ELQApEBuR2KC2dJzfzAN5TEhBdQSMpgD7H0lRBo2"
+                  clientKey:@"JNuRPPbCZgxzYBhhZBARalfstu4pxQgk3c142z85"];
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+    [PFFacebookUtils initializeFacebook];
+
+    
     UIViewController *viewController1 = [[QCFirstViewController alloc] initWithNibName:@"QCFirstViewController" bundle:nil];
     UIViewController *viewController2 = [[QCSecondViewController alloc] initWithNibName:@"QCSecondViewController" bundle:nil];
     self.tabBarController = [[UITabBarController alloc] init];
@@ -25,6 +35,11 @@
     self.window.rootViewController = self.tabBarController;
     [self.window makeKeyAndVisible];
     return YES;
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [PFFacebookUtils handleOpenURL:url];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -47,11 +62,13 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [FBSession.activeSession handleDidBecomeActive];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    [FBSession.activeSession close];
 }
 
 /*
